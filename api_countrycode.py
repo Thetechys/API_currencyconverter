@@ -1,3 +1,5 @@
+import re
+
 cc = {
     "success": "true",
     "symbols": {
@@ -173,3 +175,29 @@ cc = {
         "ZWL": "Zimbabwean Dollar"
     }
 }
+
+
+
+code = [key for key,val in cc['symbols'].items()]
+country = [val for key,val in cc['symbols'].items()]
+cclist = cc["symbols"]
+
+def search_code():
+    
+    codesearch = input('Search country code of: ').title()
+
+    try:
+        x = [key for key,val in cclist.items() if re.search(codesearch,val)][0]
+
+    except IndexError:
+        return 'Currency / Country not found'
+
+    return x
+
+
+
+var1 = 'Singapore'
+
+var1_up = var1.upper()
+
+print(var1_up)
