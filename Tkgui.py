@@ -2,6 +2,8 @@ import tkinter as tk
 from tkinter import messagebox
 import requests
 import re
+import pandas as pd
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
 
 
@@ -353,7 +355,18 @@ stat_label = tk.Label(root,textvariable=var8)
 stat_label.grid(row=4,column=1)
 
 
+'''----------------5TH ROW----------------'''
+y = {'f(x)':[2,10,6,8],'g(x)':[1,9,5,7]}
+x = [1,2,3,4]
 
+graph = pd.DataFrame(y,x)
+
+graph_plot = graph.plot(kind='line',grid=True,title='My graph',ylabel='y Axis', xlabel='x Axis',figsize=(6,3)).get_figure()
+
+canvas = FigureCanvasTkAgg(graph_plot,master=root)
+canvas.draw()
+
+canvas.get_tk_widget().grid(row=5,column=1,columnspan=7)
 
 #def a function to get lastest country code list but hide this function
 # f5country_button = tk.Button(root, text='Refresh country',command=)
