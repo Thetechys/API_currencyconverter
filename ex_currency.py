@@ -8,12 +8,12 @@ cvtfrom = 'SGD'
 amount = 100
 
 
-response = requests.get(
-    f"https://api.apilayer.com/exchangerates_data/convert?to={to}&from={cvtfrom}&amount={amount}", headers=apiheader
-    )
+# response = requests.get(
+#     f"https://api.apilayer.com/exchangerates_data/convert?to={to}&from={cvtfrom}&amount={amount}", headers=apiheader
+#     )
 
 
-resobj = response.json()
+# resobj = response.json()
 
 # payload = {}
 
@@ -37,18 +37,16 @@ history = requests.get(f"https://api.apilayer.com/exchangerates_data/timeseries?
                             ,headers=apiheader, stream=True)
 
 
-historyobj = history.json()
+historyobj = history.content.decode()
 
 iterobj = history.iter_content(chunk_size=1024)
 
-for i in iterobj:
+# for i in iterobj:
 
-    iterdecode = i.decode()
-    print(iterdecode)
+#     iterdecode = i.decode()
+#     print(iterdecode)
 
-#print(historyobj)
-
-#print(f"query result {resobj['result']}")
+print(historyobj)
 
 
 historydata_holder = {
