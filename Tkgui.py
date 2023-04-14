@@ -4,6 +4,10 @@ import requests
 import re
 import pandas as pd
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+import matplotlib.pyplot as plt
+from datetime import datetime, timedelta
+from math import floor
+import numpy as np
 
 
 
@@ -263,6 +267,78 @@ def query_exc_rate(*args):
         var5.set(resobj['result'])
         var8.set(f"Exchange rate as of {resobj['date']}")
 
+        show_trend()
+
+def show_trend():
+
+    # base = var.get()
+    # symbols = var2.get()
+
+    base = "SGD"
+    symbols = "MYR"
+
+
+    print(base)
+    print(symbols)
+
+    tday = datetime.today()
+    pastday = tday - timedelta(days=120)
+
+    st_day = pastday.strftime("%Y-%m-%d")
+    end_day = tday.strftime("%Y-%m-%d")
+    
+
+
+    history = requests.get(f"https://api.apilayer.com/exchangerates_data/timeseries?\
+                       start_date={st_day}&end_date={end_day}&base={base}&symbols={symbols}"
+                            ,headers=apiheader, stream=True)
+
+    historyobj = history.json()
+
+    raw_date_point = [datetime.strptime(i, "%Y-%m-%d") for i in historyobj["rates"].keys()]
+    date_point = [dt.strftime("%Y/%m/%d") for dt in raw_date_point]
+    np_date_point = np.array(date_point)
+    
+
+    rate_point = [rt for key,val in historyobj["rates"].items() for rt in val.values()]
+    np_rate_point = np.array(rate_point)
+
+    print(f"type of date_point = {type(date_point)}")
+    print(f"type of np_date_point = {type(np_date_point)}")
+    print(np_date_point)
+    print(f"type of rate_point = {type(rate_point)}")
+    print(f"type of new_rate_point = {type(rate_point)}")
+    print(rate_point)
+
+    date_len = len(date_point)
+    mididx = floor(date_len/2)
+    oneidx = floor(mididx/2)
+    thirdidx = floor(((date_len-mididx) / 2) + mididx)
+
+    new_date_point = [date_point[0], date_point[oneidx], date_point[mididx], date_point[thirdidx], date_point[-1]]
+
+    # plt.plot(date_point, rate_point)
+    # plt.xticks(new_date_point, rotation = 65)
+    # plt.title("FX RATE TREND")
+    # plt.xlabel('DATE')
+    # plt.ylabel("RATE")
+    # plt.xlim(new_date_point[0],new_date_point[-1])
+    # plt.grid(grid_animated=True)
+    # plt.show()
+
+    the_plot = plt.plot(np_date_point, np_rate_point)
+    # the_plot.xticks(new_date_point, rotation = 65)
+    # the_plot.title("FX RATE TREND")
+    # the_plot.xlabel('DATE')
+    # the_plot.ylabel("RATE")
+    # the_plot.xlim(new_date_point[0],new_date_point[-1])
+
+    canvas = FigureCanvasTkAgg(the_plot, master=root)
+    canvas.draw()
+    canvas.get_tk_widget().pack()
+
+
+
 def search_code():
     
     if check_txt(var6):
@@ -332,7 +408,8 @@ out_label.grid(row=2,column=7)
 
 
 '''----------------3RD ROW----------------'''
-submit_button = tk.Button(root, text='Submit',command=query_exc_rate)
+#submit_button = tk.Button(root, text='Submit',command=query_exc_rate)
+submit_button = tk.Button(root, text='Submit',command=show_trend)
 submit_button.grid(row=3,column=2)
 
 reset_button = tk.Button(root, text='Reset',command=reset)
@@ -352,25 +429,24 @@ reset_button2.grid(row=3,column=7)
 
 '''----------------4TH ROW----------------'''
 stat_label = tk.Label(root,textvariable=var8)
-stat_label.grid(row=4,column=1)
+stat_label.grid(row=4,column=1, columnspan=7)
 
 
 '''----------------5TH ROW----------------'''
-y = {'f(x)':[2,10,6,8],'g(x)':[1,9,5,7]}
-x = [1,2,3,4]
+# y = {'f(x)':[2,10,6,8],'g(x)':[1,9,5,7]}
+# x = [1,2,3,4]
 
-graph = pd.DataFrame(y,x)
+# graph = pd.DataFrame(y,x)
 
-graph_plot = graph.plot(kind='line',grid=True,title='My graph',ylabel='y Axis', xlabel='x Axis',figsize=(6,3)).get_figure()
+# graph_plot = graph.plot(kind='line',grid=True,title='My graph',ylabel='y Axis', xlabel='x Axis',figsize=(6,3)).get_figure()
 
-canvas = FigureCanvasTkAgg(graph_plot,master=root)
-canvas.draw()
+# canvas = FigureCanvasTkAgg(graph_plot,master=root)
+# canvas.draw()
 
-canvas.get_tk_widget().grid(row=5,column=1,columnspan=7)
+# canvas.get_tk_widget().grid(row=5,column=1,columnspan=7)
 
 #def a function to get lastest country code list but hide this function
 # f5country_button = tk.Button(root, text='Refresh country',command=)
 # f5country_button.grid(row=3,column=4)
-
 
 root.mainloop()
