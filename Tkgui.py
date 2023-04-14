@@ -200,7 +200,7 @@ ccsymbols = cc["symbols"]
 
 
 
-dimension = xwidth, yheight = 800,400
+dimension = xwidth, yheight = 800,650
 root = tk.Tk()
 root.geometry(f"{int(xwidth)}x{int(yheight)}")
 
@@ -245,6 +245,9 @@ def reset():
     var4.set('')    ##exchange RATE label
     var5.set('')    ##exchanged AMOUNT label
 
+
+
+
 def reset_code():
     var6.set('')    ##GUIDE entry box
     var7.set('')    ##guide OUTPUT label
@@ -265,18 +268,14 @@ def query_exc_rate(*args):
         resobj = response.json()
         var4.set(resobj['info']['rate'])
         var5.set(resobj['result'])
-        var8.set(f"Exchange rate as of {resobj['date']}")
+        var8.set(f"** Exchange rate as of {resobj['date']} **")
 
         show_trend()
 
 def show_trend():
 
-    # base = var.get()
-    # symbols = var2.get()
-
-    base = "SGD"
-    symbols = "MYR"
-
+    base = var.get()
+    symbols = var2.get()
 
     print(base)
     print(symbols)
@@ -296,46 +295,42 @@ def show_trend():
     historyobj = history.json()
 
     raw_date_point = [datetime.strptime(i, "%Y-%m-%d") for i in historyobj["rates"].keys()]
-    date_point = [dt.strftime("%Y/%m/%d") for dt in raw_date_point]
+    date_point = [dt.strftime("%d/%m/%y") for dt in raw_date_point]
     np_date_point = np.array(date_point)
     
 
     rate_point = [rt for key,val in historyobj["rates"].items() for rt in val.values()]
     np_rate_point = np.array(rate_point)
 
-    print(f"type of date_point = {type(date_point)}")
-    print(f"type of np_date_point = {type(np_date_point)}")
-    print(np_date_point)
-    print(f"type of rate_point = {type(rate_point)}")
-    print(f"type of new_rate_point = {type(rate_point)}")
-    print(rate_point)
-
     date_len = len(date_point)
     mididx = floor(date_len/2)
     oneidx = floor(mididx/2)
     thirdidx = floor(((date_len-mididx) / 2) + mididx)
 
-    new_date_point = [date_point[0], date_point[oneidx], date_point[mididx], date_point[thirdidx], date_point[-1]]
+    xticks = [date_point[0], date_point[oneidx], date_point[mididx], date_point[thirdidx], date_point[-1]]
 
-    # plt.plot(date_point, rate_point)
-    # plt.xticks(new_date_point, rotation = 65)
-    # plt.title("FX RATE TREND")
-    # plt.xlabel('DATE')
-    # plt.ylabel("RATE")
-    # plt.xlim(new_date_point[0],new_date_point[-1])
-    # plt.grid(grid_animated=True)
-    # plt.show()
+    fig, ax = plt.subplots()
+    fig_size = fig.get_size_inches()
+    font_size = min(fig_size)
 
-    the_plot = plt.plot(np_date_point, np_rate_point)
-    # the_plot.xticks(new_date_point, rotation = 65)
-    # the_plot.title("FX RATE TREND")
-    # the_plot.xlabel('DATE')
-    # the_plot.ylabel("RATE")
-    # the_plot.xlim(new_date_point[0],new_date_point[-1])
+    ax.plot(np_date_point, np_rate_point)
+    ax.set_title("FX Rate Trend")
+    ax.set_xlabel("Date")
+    ax.set_ylabel("Rate")
+    ax.set_xlim((xticks[0],xticks[-1]))
 
-    canvas = FigureCanvasTkAgg(the_plot, master=root)
+    ax.set_xticks(xticks)
+    ax.tick_params(axis='both', labelsize=font_size+2)
+    ax.grid(True)
+
+    canvas = FigureCanvasTkAgg(fig, master=root)
     canvas.draw()
-    canvas.get_tk_widget().pack()
+    canvas.get_tk_widget().grid(row=5, column=1, columnspan=7)
+
+
+def remove_trend(fig):
+    
+    fig.get_tk_widget().grid_forget()
 
 
 
@@ -408,8 +403,7 @@ out_label.grid(row=2,column=7)
 
 
 '''----------------3RD ROW----------------'''
-#submit_button = tk.Button(root, text='Submit',command=query_exc_rate)
-submit_button = tk.Button(root, text='Submit',command=show_trend)
+submit_button = tk.Button(root, text='Submit',command=query_exc_rate)
 submit_button.grid(row=3,column=2)
 
 reset_button = tk.Button(root, text='Reset',command=reset)
@@ -418,7 +412,6 @@ reset_button.grid(row=3,column=3)
 ''' this button is available ONLY when there are changes in country codes'''
 ''' at that time - uncomment refresh_button.grid below '''
 refresh_button = tk.Button(root, text='Refresh country',command=f5_country)
-#refresh_button.grid(row=3,column=4)
 
 search_button = tk.Button(root, text='Search',command=search_code)
 search_button.grid(row=3,column=6)
@@ -433,20 +426,6 @@ stat_label.grid(row=4,column=1, columnspan=7)
 
 
 '''----------------5TH ROW----------------'''
-# y = {'f(x)':[2,10,6,8],'g(x)':[1,9,5,7]}
-# x = [1,2,3,4]
-
-# graph = pd.DataFrame(y,x)
-
-# graph_plot = graph.plot(kind='line',grid=True,title='My graph',ylabel='y Axis', xlabel='x Axis',figsize=(6,3)).get_figure()
-
-# canvas = FigureCanvasTkAgg(graph_plot,master=root)
-# canvas.draw()
-
-# canvas.get_tk_widget().grid(row=5,column=1,columnspan=7)
-
-#def a function to get lastest country code list but hide this function
-# f5country_button = tk.Button(root, text='Refresh country',command=)
-# f5country_button.grid(row=3,column=4)
+'''5TH ROW RESERVED FOR SHOW TREND'''
 
 root.mainloop()

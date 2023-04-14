@@ -27,40 +27,14 @@ np_rate = np.array(rate_data)
 
 
 
-mid = floor(len(np_rate) / 2)
+fig = plt.figure()
 
-
-
-
-
-xticks = [np_date[0],np_date[mid], np_date[-1]]
-print(xticks)
-
-
-
-
-print(np_date.shape)
-print(np_rate.shape)
-
-fig, ax = plt.subplots()
-
-fig_size = fig.get_size_inches()
-
-
-font_size = min(fig_size)
-
-ax.tick_params(axis='x', labelsize=font_size)
-ax.tick_params(axis='y', labelsize=font_size)
-ax.grid(True)
-
+ax = fig.add_subplot(111)
 
 ax.plot(np_date, np_rate)
-ax.set_xticks(xticks)
-ax.set_xticklabels(xticks, rotation=65)
 
 
-canvas = FigureCanvasTkAgg(fig, master=root)
 
-canvas.draw()
-canvas.get_tk_widget().grid(row=2, column=3, columnspan=5)
-root.mainloop()
+the_canvas = FigureCanvasTkAgg(fig, master=root)
+the_canvas.draw()
+the_canvas.grid()
