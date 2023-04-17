@@ -277,8 +277,6 @@ def show_trend():
     base = var.get()
     symbols = var2.get()
 
-    print(base)
-    print(symbols)
 
     tday = datetime.today()
     pastday = tday - timedelta(days=120)
@@ -302,6 +300,15 @@ def show_trend():
     rate_point = [rt for key,val in historyobj["rates"].items() for rt in val.values()]
     np_rate_point = np.array(rate_point)
 
+
+    yclimax_idx = np.argmax(np_rate_point)  ##index of the highest rate in array
+    yvalley_idx = np.argmin(np_rate_point)  ##index of lowest rate in array
+
+    yclimax_pt = np_rate_point[yclimax_idx]
+    yvalley_pt = np_rate_point[yvalley_idx]
+    xclimax_pt = np_date_point[-1]
+    xvalley_pt = np_date_point[-1]
+
     date_len = len(date_point)
     mididx = floor(date_len/2)
     oneidx = floor(mididx/2)
@@ -313,12 +320,20 @@ def show_trend():
     fig_size = fig.get_size_inches()
     font_size = min(fig_size)
 
+
     ax.plot(np_date_point, np_rate_point)
+
+    ax.axhline(y=yvalley_pt, color='red', linestyle='--')
+    ax.axhline(y=yclimax_pt, color='green', linestyle='--')
+    ax.annotate(f"{yclimax_pt:.2f}",xy=(xclimax_pt, yclimax_pt),\
+                    arrowprops=dict(facecolor='green', arrowstyle='<-'), xytext=(xclimax_pt,yclimax_pt+0.02))
+    ax.annotate(f"{yvalley_pt:.2f}",xy=(xvalley_pt, yvalley_pt),\
+                    arrowprops=dict(facecolor='red', arrowstyle='<-'), xytext=(xvalley_pt,yvalley_pt+0.01))
+
     ax.set_title("FX Rate Trend")
     ax.set_xlabel("Date")
     ax.set_ylabel("Rate")
     ax.set_xlim((xticks[0],xticks[-1]))
-
     ax.set_xticks(xticks)
     ax.tick_params(axis='both', labelsize=font_size+2)
     ax.grid(True)
@@ -326,11 +341,6 @@ def show_trend():
     canvas = FigureCanvasTkAgg(fig, master=root)
     canvas.draw()
     canvas.get_tk_widget().grid(row=5, column=1, columnspan=7)
-
-
-def remove_trend(fig):
-    
-    fig.get_tk_widget().grid_forget()
 
 
 

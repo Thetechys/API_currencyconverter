@@ -26,9 +26,9 @@ np_rate = np.array(rate_data)
 yclimax = np.argmax(np_rate)
 yvalley = np.argmin(np_rate)
 ymax_point = np_rate[yclimax]
-xmax_point = np_date[yclimax]
+xmax_point = np_date[-1]
 ymin_point = np_rate[yvalley]
-xmin_point = np_date[yvalley]
+xmin_point = np_date[-1]
 
 mid = floor(len(np_rate) / 2)
 
@@ -57,10 +57,10 @@ ax.tick_params(axis='x', labelsize=font_size)
 ax.tick_params(axis='y', labelsize=font_size)
 ax.grid(True)
 
-ax.annotate(f"{ymax_point}",xy=(xmax_point, ymax_point),\
-            arrowprops=dict(facecolor='blue', arrowstyle='wedge'), xytext=(xmax_point,ymax_point+0.02))
-ax.annotate(f"{ymin_point}",xy=(xmin_point, ymin_point),\
-            arrowprops=dict(facecolor='blue', arrowstyle='wedge'), xytext=(xmin_point,ymin_point+0.01))
+ax.annotate(f"{ymax_point:.2f}",xy=(xmax_point, ymax_point),\
+            arrowprops=dict(facecolor='blue', arrowstyle='<-'), xytext=(xmax_point,ymax_point+0.02))
+ax.annotate(f"{ymin_point:.2f}",xy=(xmin_point, ymin_point),\
+            arrowprops=dict(facecolor='blue', arrowstyle='<-'), xytext=(xmin_point,ymin_point+0.01))
 ax.axhline(y=ymin_point, color='red', linestyle='--')
 ax.axhline(y=ymax_point, color='green', linestyle='--')
 ax.plot(np_date, np_rate)
